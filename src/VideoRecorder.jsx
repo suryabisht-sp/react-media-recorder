@@ -126,13 +126,14 @@ const VideoRecorder = () => {
 						<button onClick={getCameraPermission} type="button">
 							Get Camera
 						</button>
+
 					) : null}
 					{permission && recordingStatus === "inactive" ? (
 						<div>
 							<button onClick={startRecording} type="button">
 								Start Recording
 							</button>
-							<button onClick={() => { setFrontCam(true) }}>Flip Camera</button>
+							<button onClick={() => { setFrontCam(!frontCam) }}>Flip Camera</button>
 						</div>
 					) : null}
 					{recordingStatus === "recording" ? (
