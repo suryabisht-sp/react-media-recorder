@@ -1,6 +1,6 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
-const mimeType = "audio/mp3";
+const mimeType = "audio/mpeg";
 
 const AudioRecorder = () => {
   const [permission, setPermission] = useState(false);
@@ -56,11 +56,13 @@ const AudioRecorder = () => {
     mediaRecorder.current.stop();
 
     mediaRecorder.current.onstop = () => {
-      const audioBlob = new Blob(audioChunks, { type: mimeType });
+      const audioBlob = new Blob(audioChunks, { type: "audio/mpeg" });
       const audioUrl = URL.createObjectURL(audioBlob);
-
+      const formData = new FormData();
+      formData.append("audio-file", audioBlob);
+   console.log("formData", formData)
       setAudio(audioUrl);
-
+      console.log("audioUrl", audioUrl);
       setAudioChunks([]);
     };
   };
@@ -89,12 +91,12 @@ const AudioRecorder = () => {
         {audio ? (
           <div className="audio-player">
             <audio controls>
-              <source src={audio} />
+              <source src={audio} type="audio/mp3" />
             </audio>
             {/* <audio src={audio} controls ></audio> */}
-            <a download href={audio}>
+            {/* <a download href={audio}>
               Download Recording
-            </a>
+            </a> */}
           </div>
         ) : null}
       </main>
