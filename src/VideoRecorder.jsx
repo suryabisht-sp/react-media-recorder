@@ -32,11 +32,15 @@ const VideoRecorder = () => {
 				const audioStream = await navigator.mediaDevices.getUserMedia(
 					audioConstraints
 				);
+
 				const videoStream = await navigator.mediaDevices.getUserMedia({
 					videoConstraints,
 					video: {
-						facingMode: { exact: "environment" },
+						facingMode: frontCam ? "user" : { exact: "environment" },
 					},
+					video: {
+						user: {}
+					}
 				}
 				);
 
@@ -95,6 +99,7 @@ const VideoRecorder = () => {
 		setVideoChunks([]);
 	}
 
+	const [frontCam, setFrontCam] = useState(false)
 	return (
 		<div>
 			<h2>Video Recorder</h2>
@@ -106,9 +111,12 @@ const VideoRecorder = () => {
 						</button>
 					) : null}
 					{permission && recordingStatus === "inactive" ? (
-						<button onClick={startRecording} type="button">
-							Start Recording
-						</button>
+						<div>
+							<button onClick={startRecording} type="button">
+								Start Recording
+							</button>
+							<button onClick={() => { setFrontCam(true) }}>Flip Camera</button>
+						</div>
 					) : null}
 					{recordingStatus === "recording" ? (
 						<button onClick={stopRecording} type="button">
@@ -124,10 +132,10 @@ const VideoRecorder = () => {
 				{recordedVideo ? (
 					<div className="recorded-player">
 						<video className="recorded" src={recordedVideo} controls></video>
+						<hr />
 						<a download href={recordedVideo}>
 							Download Recording
 						</a>
-						<br />
 						<a onClick={() => { clearState() }}>Delete</a>
 					</div>
 				) : null}

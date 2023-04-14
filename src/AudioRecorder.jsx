@@ -63,10 +63,15 @@ const AudioRecorder = () => {
       console.log("formData", formData)
       setAudio(audioUrl);
       console.log("audioUrl", audioUrl);
-      setAudioChunks([]);
+      setAudio(audioUrl)
     };
   };
 
+  const deleteAudio = () => {
+    setAudio(null)
+    setAudioChunks([])
+
+  }
   return (
     <div>
       <h2>Audio Recorder</h2>
@@ -94,9 +99,12 @@ const AudioRecorder = () => {
               <source src={audio} type="audio/mp3" />
             </audio>
             {/* <audio src={audio} controls ></audio> */}
-            {/* <a download href={audio}>
+            <hr />
+            <a download href={audio}>
               Download Recording
-            </a> */}
+            </a>
+
+            <button onClick={() => { deleteAudio() }}>Delete</button>
           </div>
         ) : null}
       </main>
