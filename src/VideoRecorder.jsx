@@ -42,14 +42,13 @@ const VideoRecorder = () => {
 				const videoStream = await navigator.mediaDevices.getUserMedia({
 					videoConstraints,
 					video: {
-						facingMode: frontCam ? "user" : { exact: "environment" },
+						facingMode: !frontCam ? "environment" : "user",
 					},
 					video: {
 						user: {}
 					}
 				}
 				);
-
 				setPermission(true);
 
 				//combine both audio and video streams
