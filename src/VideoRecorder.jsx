@@ -32,8 +32,12 @@ const VideoRecorder = () => {
 				const audioStream = await navigator.mediaDevices.getUserMedia(
 					audioConstraints
 				);
-				const videoStream = await navigator.mediaDevices.getUserMedia(
-					videoConstraints
+				const videoStream = await navigator.mediaDevices.getUserMedia({
+					videoConstraints,
+					video: {
+						facingMode: { exact: "environment" },
+					},
+				}
 				);
 
 				setPermission(true);
@@ -114,10 +118,8 @@ const VideoRecorder = () => {
 				</div>
 			</main>
 			<div className="video-player">
-				{!recordedVideo ? (<div className="">
-					<a className="delete" onClick={() => { clearState() }}>Delete</a>
+				{!recordedVideo ? (
 					<video ref={liveVideoFeed} autoPlay className="live-player"></video>
-				</div>
 				) : null}
 				{recordedVideo ? (
 					<div className="recorded-player">
@@ -125,6 +127,7 @@ const VideoRecorder = () => {
 						<a download href={recordedVideo}>
 							Download Recording
 						</a>
+						<br />
 						<a onClick={() => { clearState() }}>Delete</a>
 					</div>
 				) : null}
