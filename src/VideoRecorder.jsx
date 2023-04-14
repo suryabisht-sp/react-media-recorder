@@ -19,6 +19,13 @@ const VideoRecorder = () => {
 
 	const [frontCam, setFrontCam] = useState(true)
 
+	navigator.getUserMedia = navigator.getUserMedia ||
+		navigator.webkitGetUserMedia ||
+		navigator.mozGetUserMedia ||
+		navigator.msGetUserMedia;
+
+
+	console.log("console", navigator.mediaDevices)
 	const getCameraPermission = async () => {
 		setRecordedVideo(null);
 		//get video and audio permissions and then stream the result media stream to the videoSrc variable
@@ -31,16 +38,20 @@ const VideoRecorder = () => {
 				const audioConstraints = { audio: true };
 
 				// create audio and video streams separately
-				const audioStream = await navigator.mediaDevices.getUserMedia(
-					audioConstraints
-				);
-				const videoStream = frontCam ? await navigator.mediaDevices.getUserMedia({
-					videoConstraints,
-					video: {
-						facingMode: { exact: "environment" },
-					},
-				}
-				) :
+				const audioStream = await (navigator.mediaDevices || navigator.webkitGetUserMedia ||
+					navigator.mozGetUserMedia ||
+					navigator.msGetUserMedia).getUserMedia(
+						audioConstraints
+					);
+				const videoStream = frontCam ? await (navigator.mediaDevices || navigator.webkitGetUserMedia ||
+					navigator.mozGetUserMedia ||
+					navigator.msGetUserMedia).getUserMedia({
+						videoConstraints,
+						video: {
+							facingMode: { exact: "environment" },
+						},
+					}
+					) :
 					await navigator.mediaDevices.getUserMedia({
 						videoConstraints,
 						video: { facingMode: "user" },
@@ -110,7 +121,6 @@ const VideoRecorder = () => {
 		<div>
 			<h2>Video Recorder</h2>
 			<main>
-				<button onClick={() => { setFrontCam(!frontCam) }}>Flip Camera</button>
 				<div className="video-controls">
 					{!permission ? (
 						<button onClick={getCameraPermission} type="button">
@@ -118,17 +128,17 @@ const VideoRecorder = () => {
 						</button>
 					) : null}
 					{permission && recordingStatus === "inactive" ? (
+						<button onClick={startRecording} type="button">
+							Start Recording
+						</button>
+					) : null}
+					{recordingStatus === "recording" ? (
 						<div>
-							<button onClick={startRecording} type="button">
-								Start Recording
+							<button onClick={stopRecording} type="button">
+								Stop Recording
 							</button>
 							<button onClick={() => { setFrontCam(!frontCam) }}>Flip Camera</button>
 						</div>
-					) : null}
-					{recordingStatus === "recording" ? (
-						<button onClick={stopRecording} type="button">
-							Stop Recording
-						</button>
 					) : null}
 				</div>
 			</main>
