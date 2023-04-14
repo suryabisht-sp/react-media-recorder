@@ -25,7 +25,7 @@ const VideoRecorder = () => {
 		navigator.msGetUserMedia;
 
 
-	console.log("console", navigator.mediaDevices)
+	// console.log("console", navigator.mediaDevices)
 	const getCameraPermission = async () => {
 		setRecordedVideo(null);
 		//get video and audio permissions and then stream the result media stream to the videoSrc variable

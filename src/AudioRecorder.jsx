@@ -60,9 +60,9 @@ const AudioRecorder = () => {
       const audioUrl = URL.createObjectURL(audioBlob);
       const formData = new FormData();
       formData.append("audio-file", audioBlob);
-      console.log("formData", formData)
+      // console.log("formData", formData)
       setAudio(audioUrl);
-      console.log("audioUrl", audioUrl);
+      // console.log("audioUrl", audioUrl);
       setAudio(audioUrl)
     };
   };
@@ -70,8 +70,25 @@ const AudioRecorder = () => {
   const deleteAudio = () => {
     setAudio(null)
     setAudioChunks([])
+    setMins(0o0)
 
   }
+  let counter = 60;
+
+  const [mins, setMins] = useState(0o0)
+
+  const timmerCheck = () => {
+    const interval = setInterval(() => {
+      counter--;
+      setMins(counter)
+      if (counter <= 0) {
+        clearInterval(interval);
+        console.log('Ding!');
+      }
+    }, 1000);
+  }
+
+
   return (
     <div>
       <h2>Audio Recorder</h2>
@@ -83,32 +100,38 @@ const AudioRecorder = () => {
             </button>
           ) : null}
           {permission && recordingStatus === "inactive" ? (
-            <button onClick={startRecording} type="button">
+            <button onClick={() => { timmerCheck(); startRecording() }} type="button">
               Start Recording
             </button>
           ) : null}
           {recordingStatus === "recording" ? (
-            <button onClick={stopRecording} type="button">
-              Stop Recording
-            </button>
+            <div>
+              <button onClick={stopRecording} type="button">
+                Stop Recording
+              </button>
+              <hr />
+              <span id="seconds">00</span>:<span id="tens">{mins}</span>
+            </div>
           ) : null}
         </div>
-        {audio ? (
-          <div className="audio-player">
-            <audio controls>
-              <source src={audio} type="audio/mp3" />
-            </audio>
-            {/* <audio src={audio} controls ></audio> */}
-            <hr />
-            <a download href={audio}>
-              Download Recording
-            </a>
+        {
+          audio ? (
+            <div className="audio-player">
+              <audio controls>
+                <source src={audio} type="audio/mp3" />
+              </audio>
+              {/* <audio src={audio} controls ></audio> */}
+              <hr />
+              <a download href={audio}>
+                Download Recording
+              </a>
 
-            <button onClick={() => { deleteAudio() }}>Delete</button>
-          </div>
-        ) : null}
-      </main>
-    </div>
+              <button onClick={() => { deleteAudio() }}>Delete</button>
+            </div>
+          ) : null
+        }
+      </main >
+    </div >
   );
 };
 
