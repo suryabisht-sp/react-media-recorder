@@ -17,11 +17,7 @@ const VideoRecorder = () => {
 
 	const [videoChunks, setVideoChunks] = useState([]);
 
-	const [frontCam, setFrontCam] = useState(false)
-
-	useEffect(() => {
-		getCameraPermission()
-	}, [frontCam])
+	const [frontCam, setFrontCam] = useState(true)
 
 	const getCameraPermission = async () => {
 		setRecordedVideo(null);
@@ -38,34 +34,22 @@ const VideoRecorder = () => {
 				const audioStream = await navigator.mediaDevices.getUserMedia(
 					audioConstraints
 				);
-
-				const videoStream = !frontCam ? await navigator.mediaDevices.getUserMedia({
+				const videoStream = frontCam ? await navigator.mediaDevices.getUserMedia({
 					videoConstraints,
 					video: {
-						facingMode: { exact: "environment" }
+						facingMode: { exact: "environment" },
 					},
-					video: {
-						user: {}
-					}
 				}
 				) :
 					await navigator.mediaDevices.getUserMedia({
 						videoConstraints,
-						video: {
-							facingMode: "user"
-						},
-						video: {
-							user: {}
-						}
+						video: { facingMode: "user" },
 					}
-					)
+					);
+				;
 
-
-					;
 				setPermission(true);
-
 				//combine both audio and video streams
-
 				const combinedStream = new MediaStream([
 					...videoStream.getVideoTracks(),
 					...audioStream.getAudioTracks(),
@@ -82,6 +66,11 @@ const VideoRecorder = () => {
 			alert("The MediaRecorder API is not supported in your browser.");
 		}
 	};
+
+	useEffect(() => {
+		getCameraPermission()
+	}, [frontCam])
+
 
 	const startRecording = async () => {
 		setRecordingStatus("recording");
@@ -121,12 +110,12 @@ const VideoRecorder = () => {
 		<div>
 			<h2>Video Recorder</h2>
 			<main>
+				<button onClick={() => { setFrontCam(!frontCam) }}>Flip Camera</button>
 				<div className="video-controls">
 					{!permission ? (
 						<button onClick={getCameraPermission} type="button">
 							Get Camera
 						</button>
-
 					) : null}
 					{permission && recordingStatus === "inactive" ? (
 						<div>
@@ -150,7 +139,6 @@ const VideoRecorder = () => {
 				{recordedVideo ? (
 					<div className="recorded-player">
 						<video className="recorded" src={recordedVideo} controls></video>
-						<hr />
 						<a download href={recordedVideo}>
 							Download Recording
 						</a>
