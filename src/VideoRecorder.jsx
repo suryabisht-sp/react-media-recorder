@@ -42,7 +42,7 @@ const VideoRecorder = () => {
 				const videoStream = await navigator.mediaDevices.getUserMedia({
 					videoConstraints,
 					video: {
-						facingMode: !frontCam ? "environment" : "user",
+						facingMode: "environment",
 					},
 					video: {
 						user: {}
