@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 const mimeType = 'video/webm; codecs="opus,vp8"';
 
@@ -16,6 +16,12 @@ const VideoRecorder = () => {
 	const [recordedVideo, setRecordedVideo] = useState(null);
 
 	const [videoChunks, setVideoChunks] = useState([]);
+
+	const [frontCam, setFrontCam] = useState(false)
+
+	useEffect(() => {
+		getCameraPermission()
+	}, [frontCam])
 
 	const getCameraPermission = async () => {
 		setRecordedVideo(null);
@@ -99,7 +105,6 @@ const VideoRecorder = () => {
 		setVideoChunks([]);
 	}
 
-	const [frontCam, setFrontCam] = useState(false)
 	return (
 		<div>
 			<h2>Video Recorder</h2>
