@@ -60,7 +60,7 @@ const AudioRecorder = () => {
       const audioUrl = URL.createObjectURL(audioBlob);
       const formData = new FormData();
       formData.append("audio-file", audioBlob);
-   console.log("formData", formData)
+      console.log("formData", formData)
       setAudio(audioUrl);
       console.log("audioUrl", audioUrl);
       setAudioChunks([]);

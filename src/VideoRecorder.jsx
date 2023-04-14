@@ -61,19 +61,14 @@ const VideoRecorder = () => {
 		setRecordingStatus("recording");
 
 		const media = new MediaRecorder(stream, { mimeType });
-
 		mediaRecorder.current = media;
-
 		mediaRecorder.current.start();
-
 		let localVideoChunks = [];
-
 		mediaRecorder.current.ondataavailable = (event) => {
 			if (typeof event.data === "undefined") return;
 			if (event.data.size === 0) return;
 			localVideoChunks.push(event.data);
 		};
-
 		setVideoChunks(localVideoChunks);
 	};
 
@@ -91,6 +86,10 @@ const VideoRecorder = () => {
 			setVideoChunks([]);
 		};
 	};
+	const clearState = () => {
+		setRecordedVideo(null);
+		setVideoChunks([]);
+	}
 
 	return (
 		<div>
@@ -114,10 +113,11 @@ const VideoRecorder = () => {
 					) : null}
 				</div>
 			</main>
-
 			<div className="video-player">
-				{!recordedVideo ? (
+				{!recordedVideo ? (<div className="">
+					<a className="delete" onClick={() => { clearState() }}>Delete</a>
 					<video ref={liveVideoFeed} autoPlay className="live-player"></video>
+				</div>
 				) : null}
 				{recordedVideo ? (
 					<div className="recorded-player">
@@ -125,6 +125,7 @@ const VideoRecorder = () => {
 						<a download href={recordedVideo}>
 							Download Recording
 						</a>
+						<a onClick={() => { clearState() }}>Delete</a>
 					</div>
 				) : null}
 			</div>
