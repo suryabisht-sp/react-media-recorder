@@ -102,6 +102,10 @@ const VideoRecorder = () => {
 
 	const getCameraStatus = () => {
 		navigator.mediaDevices.getUserMedia({ audio: true, video: true })
+		// (navigator.getUserMedia ||
+		// 	navigator.webkitGetUserMedia ||
+		// 	navigator.mozGetUserMedia ||
+		// 	navigator.msGetUserMedia).getUserMedia({ audio: true, video: true })
 		setPermission(true)
 	}
 
