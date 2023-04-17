@@ -30,6 +30,16 @@ const VideoRecorder = () => {
 	// 	console.log('Webcam: ' + (hasWebcam ? 'yes' : 'no'));
 	// })
 
+	// function success(stream) {
+	// 	// The success function receives an argument which points to the webcam stream
+	// 	// document.getElementById('myVideo').src = stream;
+	// }
+
+	// function error() {
+	// 	alert("No webcam for you, matey!");
+	// }
+
+
 	const getCameraPermission = async () => {
 		setRecordedVideo(null);
 		if ("MediaRecorder" in window) {
@@ -59,13 +69,10 @@ const VideoRecorder = () => {
 				console.log(error)
 			}
 		}
-
 	}
 
-
 	useEffect(() => {
-		getCameraPermission()
-		start_video_Recording()
+		// start_video_Recording();
 	}, [frontCam])
 
 	const clearState = () => {
@@ -98,19 +105,16 @@ const VideoRecorder = () => {
 		setPermission(true)
 	}
 
-
-
 	function start_video_Recording() {
 		setRecordingStatus("recording");
 		//To stores the recorded media
 		let chunks = [];
 		const startBtn = document.getElementById("video_st");
 		const endBtn = document.getElementById("video_en");
-
 		// Access the camera and microphone
 		navigator.mediaDevices.getUserMedia({
 			audio: true, video: {
-				facingMode: frontCam ? "user" : { exact: "environment" }
+				facingMode: frontCam ? "user" : { exact: "environment" },
 			}
 		})
 			.then((mediaStreamObj) => {
@@ -129,9 +133,10 @@ const VideoRecorder = () => {
 					const RecUrl = URL.createObjectURL(blobFile);
 					setRecordedVideo(RecUrl)
 				};
-				document.getElementById("vidBox").srcObject = mediaStreamObj;
+				document.getElementById("vidBox").srcObject = mediaStreamObj
 			});
 	}
+
 
 	function stop_Recording(end, start) {
 		setRecordingStatus("inactive")
@@ -164,6 +169,7 @@ const VideoRecorder = () => {
 		const timeString = minutes.toString().padStart(2, "0") + ":" + seconds.toString().padStart(2, "0");
 		return timeString;
 	}
+
 
 	const [currentTime, setCurrentTime] = useState("00:00")
 
@@ -219,6 +225,7 @@ const VideoRecorder = () => {
 				</div>
 			) : null}
 		</div >
+
 
 	);
 };
