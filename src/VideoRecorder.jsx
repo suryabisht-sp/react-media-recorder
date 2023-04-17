@@ -11,6 +11,7 @@ const VideoRecorder = () => {
 	const [recordedVideo, setRecordedVideo] = useState(null);
 	const [videoChunks, setVideoChunks] = useState([]);
 	const [frontCam, setFrontCam] = useState(true)
+	const VideoRef = useRef(null);
 
 	navigator.getUserMedia = navigator.getUserMedia ||
 		navigator.webkitGetUserMedia ||
@@ -18,112 +19,53 @@ const VideoRecorder = () => {
 		navigator.msGetUserMedia;
 
 
-	function detectWebcam(callback) {
-		let md = navigator.mediaDevices;
-		if (!md || !md.enumerateDevices) return callback(false);
-		md.enumerateDevices().then(devices => {
-			callback(devices.some(device => 'videoinput' === device.kind));
-		})
-	}
-	detectWebcam(function (hasWebcam) {
-		console.log('Webcam: ' + (hasWebcam ? 'yes' : 'no'));
-	})
+	// function detectWebcam(callback) {
+	// 	let md = navigator.mediaDevices;
+	// 	if (!md || !md.enumerateDevices) return callback(false);
+	// 	md.enumerateDevices().then(devices => {
+	// 		callback(devices.some(device => 'videoinput' === device.kind));
+	// 	})
+	// }
+	// detectWebcam(function (hasWebcam) {
+	// 	console.log('Webcam: ' + (hasWebcam ? 'yes' : 'no'));
+	// })
 
-	function success(stream) {
-		// The success function receives an argument which points to the webcam stream
-		// document.getElementById('myVideo').src = stream;
-	}
-
-	function error() {
-		alert("No webcam for you, matey!");
-	}
-	// const getCameraPermission = async () => {
-	// 	setRecordedVideo(null);
-	// 	//get video and audio permissions and then stream the result media stream to the videoSrc variable
-	// 	if ("MediaRecorder" in window) {
-	// 		try {
-	// 			const videoConstraints = {
-	// 				audio: false,
-	// 				video: true,
-	// 			};
-	// 			const audioConstraints = { audio: true };
-	// 			// create audio and video streams separately
-	// 			const audioStream = await navigator.getUserMedia(
-	// 				audioConstraints, success, error
-	// 			);
-	// 			const videoStream = frontCam ? await navigator.getUserMedia({
-	// 				videoConstraints,
-	// 				video: {
-	// 					facingMode: { exact: "environment" },
-	// 				},
-	// 			}, success, error
-	// 			) :
-	// 				await navigator.getUserMedia({
-	// 					videoConstraints,
-	// 					video: { facingMode: "user" },
-	// 				}, success, error
-	// 				);
-	// 			;
-	// 			setPermission(true);
-	// 			//combine both audio and video streams
-	// 			const combinedStream = new MediaStream([
-	// 				...videoStream.getVideoTracks(),
-	// 				...audioStream.getAudioTracks(),
-	// 			]);
-	// 			setStream(combinedStream);
-
-	// 			//set videostream to live feed player
-	// 			liveVideoFeed.current.srcObject = videoStream;
-	// 		} catch (err) {
-	// 			alert(err.message);
-	// 		}
-	// 	} else {
-	// 		alert("The MediaRecorder API is not supported in your browser.");
-	// 	}
-	// };
-
-
-
-	const getCameraPermission = () => {
+	const getCameraPermission = async () => {
 		setRecordedVideo(null);
-
+		if ("MediaRecorder" in window) {
+			try {
+				const videoConstraints = {
+					audio: false,
+					video: true,
+				}
+				const audioConstraints = { audio: true };
+				const audioStream = await navigator.getUserMedia(
+					audioConstraints
+				);
+				const videoStream = await frontCam ? (navigator.getUserMedia({
+					videoConstraints,
+					video: {
+						facingMode: { exact: "environment" },
+					}
+				}))
+					:
+					(navigator.getUserMedia({
+						videoConstraints,
+						video: { facingMode: "user" },
+					}))
+				setPermission(true)
+			}
+			catch (error) {
+				console.log(error)
+			}
+		}
 
 	}
-
-
 
 
 	useEffect(() => {
 		getCameraPermission()
 	}, [frontCam])
-
-	const startRecording = async () => {
-		setRecordingStatus("recording");
-		const media = new MediaRecorder(stream, { mimeType });
-		mediaRecorder.current = media;
-		mediaRecorder.current.start();
-		let localVideoChunks = [];
-		mediaRecorder.current.ondataavailable = (event) => {
-			if (typeof event.data === "undefined") return;
-			if (event.data.size === 0) return;
-			localVideoChunks.push(event.data);
-		};
-		setVideoChunks(localVideoChunks);
-	};
-
-	const stopRecording = () => {
-		setPermission(false);
-		setRecordingStatus("inactive");
-		mediaRecorder.current.stop();
-		mediaRecorder.current.onstop = () => {
-			const videoBlob = new Blob(videoChunks, { type: mimeType });
-			const videoUrl = URL.createObjectURL(videoBlob);
-			setRecordedVideo(videoUrl);
-			setVideoChunks([]);
-		};
-	};
-
-
 
 	const clearState = () => {
 		clearInterval(minsd);
@@ -142,6 +84,7 @@ const VideoRecorder = () => {
 			setMins(counter)
 			if (counter <= 0) {
 				console.log('Ding!');
+				stop_Recording()
 				clearInterval(interval);
 			}
 		}, 1000);
@@ -149,120 +92,133 @@ const VideoRecorder = () => {
 	}
 
 
-
-
-
+	const getCameraStatus = () => {
+		navigator.mediaDevices.getUserMedia({ audio: true, video: true })
+		setPermission(true)
+	}
 
 
 
 	function start_video_Recording() {
+		setRecordingStatus("recording");
 		//To stores the recorded media
 		let chunks = [];
 		const startBtn = document.getElementById("video_st");
 		const endBtn = document.getElementById("video_en");
 
 		// Access the camera and microphone
-		navigator.mediaDevices.getUserMedia({ audio: true, video: true })
+		navigator.mediaDevices.getUserMedia({
+			audio: true, video: {
+				facingMode: "user",
+			}
+		})
 			.then((mediaStreamObj) => {
-
 				// Create a new MediaRecorder instance
 				const medRec = new MediaRecorder(mediaStreamObj);
 				window.mediaStream = mediaStreamObj;
 				window.mediaRecorder = medRec;
 				medRec.start();
-
 				//when recorded data is available then push into chunkArr array
 				medRec.ondataavailable = (e) => {
 					chunks.push(e.data);
 				};
-
 				//stop the video recording
 				medRec.onstop = () => {
 					const blobFile = new Blob(chunks, { type: "video/mp4" }); chunks = [];
-					// create video element and store the media which is recorded
-					const recMediaFile = document.createElement("video");
-					recMediaFile.controls = true;
 					const RecUrl = URL.createObjectURL(blobFile);
-
-					//keep the recorded url as source
-					recMediaFile.src = RecUrl;
-					document.getElementById(`vid-recorder`).append(recMediaFile);
+					setRecordedVideo(RecUrl)
 				};
 				document.getElementById("vidBox").srcObject = mediaStreamObj;
-				startBtn.disabled = true;
-				endBtn.disabled = false;
 			});
 	}
-	//--------------------audio---------------------------------------
 
 	function stop_Recording(end, start) {
+		setRecordingStatus("inactive")
 		//stop all tracks
 		window.mediaRecorder.stop();
 		window.mediaStream.getTracks().forEach((track) => { track.stop(); });
-		//disable the stop button and enable the start button
-		end.disabled = true;
-		start.disabled = false;
 	}
 
+	const videoRe = VideoRef.current
+	const playVideo = () => {
+		setShowStart(false)
+		if (videoRe.paused === true) {
+			videoRe?.play()
+		}
+	}
 
+	const [showStart, setShowStart] = useState(true)
+
+	const pauseVideo = () => {
+		setShowStart(true)
+		if (videoRe) {
+			videoRe.pause()
+		}
+	}
+
+	const getTimeString = (time_in_sec) => {
+		const dateObj = new Date(time_in_sec * 1000);
+		const minutes = dateObj.getUTCMinutes();
+		const seconds = dateObj.getSeconds();
+		const timeString = minutes.toString().padStart(2, "0") + ":" + seconds.toString().padStart(2, "0");
+		return timeString;
+	}
+
+	const [currentTime, setCurrentTime] = useState("00:00")
+
+	useEffect(() => {
+		let interval;
+		const callCurrentTime = async () => {
+			interval = setInterval(() => {
+				if (VideoRef?.current) {
+					const ct = VideoRef?.current?.currentTime?.toString();
+					setCurrentTime(getTimeString(ct));
+				}
+			}, 1000);
+		};
+		callCurrentTime();
+		return () => clearInterval(interval);
+	}, [VideoRef.current]);
 
 	return (
 		<div>
 			<h2>Video-recorder</h2>
-			<div className="display-none" id="vid-recorder">
-				<div className="video-player">
-					<video autoPlay id="vidBox"> </video>
-				</div>
-				<button type="button" id="video_st" onClick={() => start_video_Recording()}>Start</button>
-				<button type="button" id="video_en" onClick={() => stop_Recording(document.getElementById('video_en'), document.getElementById('video_st'))}>
-					Stop
+			{!permission ? (
+				<button onClick={() => { getCameraStatus() }} type="button">
+					Get Camera
 				</button>
-			</div>
-			<br />
+			) : null}
+			{permission && !recordedVideo ? <div className="display-none" id="vid-recorder">
+				<div className="video-player">
+					<video autoPlay id="vidBox" style={{ width: "250px", height: "250px" }}> </video>
+				</div>
+				{recordingStatus === "inactive" ?
+					<button type="button" id="video_st" onClick={() => { start_video_Recording(); timmerCheck() }}>Start</button> :
+					<div>
+						<button type="button" id="video_en" onClick={() => stop_Recording(document.getElementById('video_en'), document.getElementById('video_st'))}>
+							Stop
+						</button>
+						<button onClick={() => { setFrontCam(!frontCam) }}>Flip Camera</button>
+						<hr />
+						<span id="seconds">00</span>:<span id="tens">{mins}</span>
+					</div>}
+			</div> : null}
 			<hr />
+			{recordedVideo ? (
+				<div className="video-player">
+					<video ref={VideoRef} style={{ width: "250px", height: "250px" }} className="recorded" src={recordedVideo}></video>
+					<p id="demo">{currentTime}</p>
+					{showStart ? <button onClick={() => { playVideo() }}>Play</button> :
+						<button onClick={() => { pauseVideo() }}>Pause</button>}
+					<br />
+					<a download href={recordedVideo}>
+						Download Recording
+					</a>
+					<button onClick={() => { clearState() }}>Delete</button>
+				</div>
+			) : null}
 		</div >
 
-
-		// <div>
-		// 	<h2>Video Recorder</h2>
-		// 	<main>
-		// 		<div className="video-controls">
-		// 			{!permission ? (
-		// 				<button onClick={getCameraPermission} type="button">
-		// 					Get Camera
-		// 				</button>
-		// 			) : null}
-		// 			{permission && recordingStatus === "inactive" ? (
-		// 				<button onClick={startRecording} type="button">
-		// 					Start Recording
-		// 				</button>
-		// 			) : null}
-		// 			{recordingStatus === "recording" ? (
-		// 				<div>
-		// 					<button onClick={stopRecording} type="button">
-		// 						Stop Recording
-		// 					</button>
-		// 					<button onClick={() => { setFrontCam(!frontCam) }}>Flip Camera</button>
-		// 					<span id="seconds">00</span>:<span id="tens">{mins}</span>
-		// 				</div>
-		// 			) : null}
-		// 		</div>
-		// 	</main>
-		// 	<div className="video-player">
-		// 		{!recordedVideo ? (
-		// 			<video ref={liveVideoFeed} autoPlay className="live-player"></video>
-		// 		) : null}
-		// 		{recordedVideo ? (
-		// 			<div className="recorded-player">
-		// 				<video className="recorded" src={recordedVideo} controls></video>
-		// 				<a download href={recordedVideo}>
-		// 					Download Recording
-		// 				</a>
-		// 				<a onClick={() => { clearState() }}>Delete</a>
-		// 			</div>
-		// 		) : null}
-		// 	</div>
-		// </div>
 	);
 };
 
