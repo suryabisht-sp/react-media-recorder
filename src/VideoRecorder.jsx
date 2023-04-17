@@ -110,7 +110,7 @@ const VideoRecorder = () => {
 		// Access the camera and microphone
 		navigator.mediaDevices.getUserMedia({
 			audio: true, video: {
-				facingMode: "user",
+				facingMode: frontCam ? "user" : { exact: "environment" }
 			}
 		})
 			.then((mediaStreamObj) => {
