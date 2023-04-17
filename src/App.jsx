@@ -15,9 +15,6 @@ const testType = (mimeType) => {
 	}
 };
 
-console.log();
-console.log('Supported Video MIME Types:');
-
 for (let i = 0; i < VIDEO_TYPES.length; ++i) {
 	const videoType = VIDEO_TYPES[i];
 	for (let j = 0; j < VIDEO_CODECS.length; ++j) {
@@ -25,9 +22,6 @@ for (let i = 0; i < VIDEO_TYPES.length; ++i) {
 		testType(`video/${videoType};codecs=${videoCodec}`);
 	}
 }
-
-console.log();
-console.log('Supported Audio MIME Types:');
 
 for (let i = 0; i < AUDIO_TYPES.length; ++i) {
 	const audioType = AUDIO_TYPES[i];

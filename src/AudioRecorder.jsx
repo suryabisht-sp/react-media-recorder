@@ -63,7 +63,6 @@ const AudioRecorder = () => {
       // console.log("formData", formData)
       setAudio(audioUrl);
       // console.log("audioUrl", audioUrl);
-      setAudio(audioUrl)
     };
   };
 
@@ -92,7 +91,6 @@ const AudioRecorder = () => {
   }
 
   const audioSr = playerRef?.current
-
 
   const getTimeString = (time_in_sec) => {
     const dateObj = new Date(time_in_sec * 1000);
@@ -130,15 +128,6 @@ const AudioRecorder = () => {
     // var x = document.getElementById("myAudio").duration;
     // document.getElementById("demo").innerHTML = x;
   }
-
-
-  const handleAudioTimeUpdate = () => {
-    const audio = playerRef?.current;
-    if (!audio) return;
-    let value = (100 / audio?.duration) * audio?.currentTime;
-    // setAudioSeekBarValue(Math.round(value));
-
-  };
 
   useEffect(() => {
     let interval;
@@ -184,7 +173,7 @@ const AudioRecorder = () => {
         {
           audio ? (
             <div className="audio-player">
-              <audio ref={playerRef} onLoadedMetadata={onLoadedMetadata} id="myAudio" onTimeUpdate={handleAudioTimeUpdate} onEnded={() => {
+              <audio ref={playerRef} onLoadedMetadata={onLoadedMetadata} id="myAudio" onEnded={() => {
                 setShowStart(true)
               }}>
                 <source src={audio} type="audio/mp3" />
