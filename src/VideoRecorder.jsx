@@ -65,6 +65,7 @@ const VideoRecorder = () => {
 
 	useEffect(() => {
 		getCameraPermission()
+		start_video_Recording()
 	}, [frontCam])
 
 	const clearState = () => {
