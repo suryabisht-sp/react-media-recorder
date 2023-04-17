@@ -4,19 +4,12 @@ const mimeType = 'video/webm; codecs="opus,vp8"';
 
 const VideoRecorder = () => {
 	const [permission, setPermission] = useState(false);
-
 	const mediaRecorder = useRef(null);
-
 	const liveVideoFeed = useRef(null);
-
 	const [recordingStatus, setRecordingStatus] = useState("inactive");
-
 	const [stream, setStream] = useState(null);
-
 	const [recordedVideo, setRecordedVideo] = useState(null);
-
 	const [videoChunks, setVideoChunks] = useState([]);
-
 	const [frontCam, setFrontCam] = useState(true)
 
 	navigator.getUserMedia = navigator.getUserMedia ||
@@ -24,8 +17,6 @@ const VideoRecorder = () => {
 		navigator.mozGetUserMedia ||
 		navigator.msGetUserMedia;
 
-
-	// console.log("console", navigator.mediaDevices)
 	const getCameraPermission = async () => {
 		setRecordedVideo(null);
 		//get video and audio permissions and then stream the result media stream to the videoSrc variable
@@ -36,7 +27,6 @@ const VideoRecorder = () => {
 					video: true,
 				};
 				const audioConstraints = { audio: true };
-
 				// create audio and video streams separately
 				const audioStream = await (navigator.mediaDevices || navigator.webkitGetUserMedia ||
 					navigator.mozGetUserMedia ||
@@ -82,10 +72,8 @@ const VideoRecorder = () => {
 		getCameraPermission()
 	}, [frontCam])
 
-
 	const startRecording = async () => {
 		setRecordingStatus("recording");
-
 		const media = new MediaRecorder(stream, { mimeType });
 		mediaRecorder.current = media;
 		mediaRecorder.current.start();
@@ -102,19 +90,40 @@ const VideoRecorder = () => {
 		setPermission(false);
 		setRecordingStatus("inactive");
 		mediaRecorder.current.stop();
-
 		mediaRecorder.current.onstop = () => {
 			const videoBlob = new Blob(videoChunks, { type: mimeType });
 			const videoUrl = URL.createObjectURL(videoBlob);
-
 			setRecordedVideo(videoUrl);
-
 			setVideoChunks([]);
 		};
 	};
 	const clearState = () => {
 		setRecordedVideo(null);
 		setVideoChunks([]);
+	}
+
+
+	const deleteAudio = () => {
+		clearInterval(minsd);
+		setAudio(null)
+		setAudioChunks([])
+		setMins("00")
+	}
+
+	let counter = 60;
+	const [mins, setMins] = useState("00")
+	const [minsd, setMinsd] = useState()
+
+	const timmerCheck = () => {
+		const interval = setInterval(() => {
+			counter--;
+			setMins(counter)
+			if (counter <= 0) {
+				console.log('Ding!');
+				clearInterval(interval);
+			}
+		}, 1000);
+		setMinsd(interval)
 	}
 
 	return (
@@ -138,6 +147,7 @@ const VideoRecorder = () => {
 								Stop Recording
 							</button>
 							<button onClick={() => { setFrontCam(!frontCam) }}>Flip Camera</button>
+							<span id="seconds">00</span>:<span id="tens">{mins}</span>
 						</div>
 					) : null}
 				</div>

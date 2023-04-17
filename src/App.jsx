@@ -10,31 +10,31 @@ const VIDEO_CODECS = ['vp9', 'vp9.0', 'vp8', 'vp8.0', 'avc1', 'av1', 'h265', 'h.
 const AUDIO_CODECS = ['opus', 'vorbis', 'aac', 'mpeg', 'mp4a', 'pcm'];
 
 const testType = (mimeType) => {
-    if (MediaRecorder.isTypeSupported(mimeType)) {
-        console.log(` ${mimeType}`);
-    }
+	if (MediaRecorder.isTypeSupported(mimeType)) {
+		console.log(` ${mimeType}`);
+	}
 };
 
 console.log();
 console.log('Supported Video MIME Types:');
 
 for (let i = 0; i < VIDEO_TYPES.length; ++i) {
-    const videoType = VIDEO_TYPES[i];
-    for (let j = 0; j < VIDEO_CODECS.length; ++j) {
-        const videoCodec = VIDEO_CODECS[j];
-        testType(`video/${videoType};codecs=${videoCodec}`);
-    }
+	const videoType = VIDEO_TYPES[i];
+	for (let j = 0; j < VIDEO_CODECS.length; ++j) {
+		const videoCodec = VIDEO_CODECS[j];
+		testType(`video/${videoType};codecs=${videoCodec}`);
+	}
 }
 
 console.log();
 console.log('Supported Audio MIME Types:');
 
 for (let i = 0; i < AUDIO_TYPES.length; ++i) {
-    const audioType = AUDIO_TYPES[i];
-    for (let j = 0; j < AUDIO_CODECS.length; ++j) {
-        const audioCodec = AUDIO_CODECS[j];
-        testType(`audio/${audioType};codecs=${audioCodec}`);
-    }
+	const audioType = AUDIO_TYPES[i];
+	for (let j = 0; j < AUDIO_CODECS.length; ++j) {
+		const audioCodec = AUDIO_CODECS[j];
+		testType(`audio/${audioType};codecs=${audioCodec}`);
+	}
 }
 
 // console.log();
